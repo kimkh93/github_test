@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="">
+
+   <!-- 방명록 목록조회 -->
+   <select id="visit_list" resultType="visit">
+   		select * from visit order by idx desc
+   </select>
+   <!-- 검색조건별 목록조회 -->
+   <select id="visit_list_condition"  
+           parameterType="vo.VisitVo" resultType="vo.VisitVo">
+   		select * from visit 
+   		<trim prefix="where" prefixOverrides="or">
+   		   <if test="name != null">
+   		      name like  '%' || #{ name } || '%' 
+   		   </if>
+   		   <if test="content != null">
+   		      or content like  '%' || #{ content } || '%' 
+   		   </if>
+   		</trim>
+   		order by idx desc
+   </select>
+   
+   <select id="visit_one" parameterType="int" 
+                          resultType="vo.VisitVo">
+   		select * from visit where idx=#{ idx }
+   </select>
+   
+   <!-- 방명록 쓰기 : insert,update,delete resultType없다
+        #{ 파라메터명 } <= VisitVo의 속성명을 사용
+   -->
+   <insert id="visit_insert"  parameterType="vo.VisitVo">
+   		insert into visit values(
+   		                      seq_visit_idx.nextVal,
+   		                      #{ name },
+   		                      #{ content },
+   		                      #{ pwd },
+   		                      #{ ip },
+   		                      sysdate)
+   </insert>
+
+   <!-- 삭제  -->   
+   <delete id="visit_delete"  parameterType="int">
+   		delete from visit where idx=#{ idx }
+   </delete>
+   
+   <!-- 수정 -->
+   <update id="visit_update"  parameterType="vo.VisitVo">
+   		update visit 
+   		        set name=#{ name },
+   		            content=#{ content },
+   		            pwd=#{ pwd },
+   		            ip=#{ ip },
+   		            regdate=sysdate 
+   		where idx=#{ idx }
+   </update>
+	
+	
+	
+	
+  
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

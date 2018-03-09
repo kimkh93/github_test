@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
+function visit_list(){
+	
+	var url = '../myopenapi/visit/list.do';
+	
+	$.ajax( {
+		url: url,
+		dataType:'json',//수신데이터 타입
+		success:function(data){
+			/*
+			data=[
+				  { "idx":52,
+				    "name":"홍길동",
+				    "content":"잘들어가나?",
+				    "pwd":"1234",
+				    "ip":"192.168.0.12",
+				    "regdate":"2018-02-26 14:30:06.0"
+				  },
+				  { "idx":52,
+					    "name":"홍길동",
+					    "content":"잘들어가나?",
+					    "pwd":"1234",
+					    "ip":"192.168.0.12",
+					    "regdate":"2018-02-26 14:30:06.0"
+				  }
+				 ]
+			*/
+			//alert(data.length);
+			var display_data="<table border='1'>";
+			for(var i=0;i<data.length;i++){
+				var visit = data[i];
+				
+				display_data = display_data +
+				               '<tr>' +
+				                 '<th>'+ visit.name +'</th>' +
+				                 '<td>'+ visit.content+ '</td>' + 
+				               '</tr>';
+			}
+			display_data = display_data + '</table>';
+			
+			
+			$('#disp').html(display_data);
+			
+		}
+	} );
+	
+}
+
+$(document).ready(function(){
+	
+	setInterval(function(){
+		visit_list();
+	},3000);
+	
+	visit_list();
+	
+	$('#bt_send').click(function(){
+		//입력된 값 얻어오기
+		var name = $('#name').val();
+		var content = $('#content').val();
+		var pwd = '1234';
+		
+		if(name==''){
+			alert('작성자 이름을 입력하세요');
+			return;
+		}
+		
+		if(content==''){
+			alert('내용을 입력하세요');
+			return;
+		}
+		
+		var url = '../myopenapi/visit/insert.do';
+		
+		$.ajax({
+			url:url,
+			data:{'name':name, 'content':content, 'pwd':pwd},
+			dataType:'json',
+			success:function(data){
+				//data={'result':'success'}
+				//data={'result':'fail'}
+				if(data.result == 'fail'){
+					alert('등록실패했습니다.');
+					return;
+				}
+				//목록요청
+				visit_list();
+				
+				//입력내용 지우기
+				$('#content').val('');
+			}
+		});
+		
+	});
+	
+});
+
+</script>
+</head>
+<body>
+	<div>
+		<table border="1" width="500">
+			<tr>
+				<td><input id = "name" value="김광호"></td>
+				<td><textarea id="content" rows="5" cols="50"></textarea></td>
+				<td><input id="bt_send" type="button" value="글쓰기"></td>
+			</tr>		
+		</table>
+	</div>
+	<div id="disp">
+	</div>
+</body>
+</html>
